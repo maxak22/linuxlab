@@ -3,637 +3,570 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DocuVoice</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Outfit:wght@200;300;400&display=swap" rel="stylesheet">
+<title>Cryptography Algorithms Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
-:root{
-  --bg:#080b10;
-  --surface:#0d1117;
-  --surface2:#111520;
-  --border:#1e2535;
-  --border2:#2a3348;
-  --text:#e8eaf0;
-  --text2:#8b90a0;
-  --text3:#555c70;
-  --gold:#c9a84c;
-  --gold2:#e8c97a;
-  --gold-glow:rgba(201,168,76,0.15);
-  --gold-dim:rgba(201,168,76,0.06);
-  --green:#3ecf8e;
-  --red:#f87171;
-  --display:'Playfair Display',Georgia,serif;
-  --body:'Outfit',sans-serif;
+:root {
+  --bg: #0a0a0f;
+  --surface: #111118;
+  --card: #16161f;
+  --border: #2a2a3a;
+  --accent: #7c6aff;
+  --accent2: #00e5c0;
+  --accent3: #ff6a8e;
+  --text: #e8e8f0;
+  --muted: #7a7a9a;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Syne', sans-serif;
+  --kw: #c792ea;
+  --fn: #82aaff;
+  --str: #c3e88d;
+  --num: #f78c6c;
+  --cm: #546e7a;
+  --op: #89ddff;
+  --bi: #ffcb6b;
 }
-
-html{font-size:16px;scroll-behavior:smooth}
-
-body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:var(--body);
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:flex-start;
-  padding:52px 20px 80px;
-  position:relative;
-  overflow-x:hidden;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; overflow-x: hidden; }
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: linear-gradient(rgba(124,106,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(124,106,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none; z-index: 0;
 }
-
-/* Ambient background orbs */
-body::before{
-  content:'';
-  position:fixed;
-  top:-200px;left:50%;
-  transform:translateX(-50%);
-  width:800px;height:500px;
-  background:radial-gradient(ellipse,rgba(201,168,76,0.07) 0%,transparent 70%);
-  pointer-events:none;
-  z-index:0;
-}
-body::after{
-  content:'';
-  position:fixed;
-  bottom:-100px;right:-100px;
-  width:500px;height:500px;
-  background:radial-gradient(ellipse,rgba(62,207,142,0.04) 0%,transparent 70%);
-  pointer-events:none;
-  z-index:0;
-}
-
-.wrap{width:100%;max-width:580px;position:relative;z-index:1}
-
-/* ── HEADER ── */
-.header{text-align:center;padding:0 0 52px;animation:rise 0.9s cubic-bezier(.16,1,.3,1) both}
-
-.logo-mark{
-  width:56px;height:56px;
-  border:1px solid var(--border2);
-  border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  margin:0 auto 28px;
-  position:relative;
-  background:var(--surface);
-}
-.logo-mark::before{
-  content:'';
-  position:absolute;inset:-1px;
-  border-radius:50%;
-  background:conic-gradient(var(--gold) 0deg,transparent 120deg,transparent 240deg,var(--gold) 360deg);
-  mask:radial-gradient(circle at center,transparent 26px,black 27px);
-  -webkit-mask:radial-gradient(circle at center,transparent 26px,black 27px);
-  animation:spin 8s linear infinite;
-}
-.logo-mark svg{width:22px;height:22px;opacity:0.8}
-
-@keyframes spin{to{transform:rotate(360deg)}}
-
-h1{
-  font-family:var(--display);
-  font-weight:400;
-  font-size:48px;
-  letter-spacing:0.04em;
-  color:var(--text);
-  line-height:1;
-  margin-bottom:10px;
-}
-h1 span{
-  font-style:italic;
-  background:linear-gradient(135deg,var(--gold),var(--gold2));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  background-clip:text;
-}
-
-.subtitle{
-  font-family:var(--body);
-  font-size:13px;
-  font-weight:300;
-  letter-spacing:0.18em;
-  text-transform:uppercase;
-  color:var(--text3);
-}
-
-/* ── CARDS ── */
-.panel{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:28px 32px;
-  margin-bottom:12px;
-  position:relative;
-  overflow:hidden;
-  animation:rise 0.7s cubic-bezier(.16,1,.3,1) both;
-  transition:border-color 0.3s;
-}
-.panel:hover{border-color:var(--border2)}
-.panel:nth-child(1){animation-delay:0.05s}
-.panel:nth-child(2){animation-delay:0.12s}
-.panel:nth-child(3){animation-delay:0.19s}
-
-.panel::before{
-  content:'';
-  position:absolute;
-  top:0;left:0;right:0;
-  height:1px;
-  background:linear-gradient(to right,transparent,var(--gold-glow),transparent);
-}
-
-/* Config panel */
-.config-panel{padding:24px 32px}
-
-.panel-head{
-  display:flex;align-items:center;gap:14px;
-  margin-bottom:24px;
-}
-.step-badge{
-  font-family:var(--body);
-  font-size:11px;
-  font-weight:300;
-  letter-spacing:0.12em;
-  color:var(--gold);
-  background:var(--gold-dim);
-  border:1px solid rgba(201,168,76,0.2);
-  padding:4px 10px;
-  border-radius:20px;
-  transition:all 0.4s;
-  white-space:nowrap;
-}
-.step-badge.done{
-  color:var(--green);
-  background:rgba(62,207,142,0.08);
-  border-color:rgba(62,207,142,0.25);
-}
-.panel-title{
-  font-family:var(--display);
-  font-size:20px;
-  font-weight:400;
-  color:var(--text);
-  letter-spacing:0.01em;
-}
-
-.field-label{
-  font-family:var(--body);
-  font-size:11px;
-  font-weight:300;
-  letter-spacing:0.14em;
-  text-transform:uppercase;
-  color:var(--text3);
-  margin-bottom:8px;
-  display:block;
-}
-
-.input-wrap{position:relative;margin-bottom:12px}
-.input-wrap:last-of-type{margin-bottom:0}
-input[type=text]{
-  width:100%;
-  padding:12px 16px 12px 40px;
-  background:var(--surface2);
-  border:1px solid var(--border);
-  border-radius:10px;
-  font-family:var(--body);
-  font-size:13px;
-  font-weight:300;
-  color:var(--text);
-  outline:none;
-  transition:border-color 0.25s,box-shadow 0.25s;
-}
-input[type=text]:focus{
-  border-color:rgba(201,168,76,0.4);
-  box-shadow:0 0 0 3px rgba(201,168,76,0.06);
-}
-input[type=text]::placeholder{color:var(--text3);font-size:12px}
-.input-icon{
-  position:absolute;left:14px;top:50%;transform:translateY(-50%);
-  opacity:0.35;pointer-events:none;
-}
-
-/* Drop zone */
-.dropzone{
-  border:1px dashed var(--border2);
-  border-radius:12px;
-  padding:32px 20px;
-  text-align:center;
-  cursor:pointer;
-  background:var(--surface2);
-  transition:all 0.3s;
-  position:relative;
-  overflow:hidden;
-  margin-bottom:16px;
-}
-.dropzone::after{
-  content:'';
-  position:absolute;inset:0;
-  background:radial-gradient(ellipse at center,var(--gold-dim),transparent 70%);
-  opacity:0;
-  transition:opacity 0.3s;
-}
-.dropzone:hover{border-color:rgba(201,168,76,0.4);background:rgba(201,168,76,0.03)}
-.dropzone:hover::after{opacity:1}
-.dropzone input{display:none}
-
-.dz-icon-wrap{
-  width:52px;height:52px;
-  border-radius:12px;
-  border:1px solid var(--border2);
-  background:var(--surface);
-  display:flex;align-items:center;justify-content:center;
-  margin:0 auto 14px;
-  position:relative;z-index:1;
-  transition:border-color 0.3s;
-}
-.dropzone:hover .dz-icon-wrap{border-color:rgba(201,168,76,0.4)}
-.dz-title{font-size:15px;font-weight:300;color:var(--text2);margin-bottom:5px;position:relative;z-index:1}
-.dz-hint{font-size:12px;font-weight:200;color:var(--text3);letter-spacing:0.06em;position:relative;z-index:1}
-
-.files-chip{
-  display:none;align-items:center;gap:8px;
-  margin-top:12px;padding:6px 14px;
-  background:rgba(201,168,76,0.08);
-  border:1px solid rgba(201,168,76,0.2);
-  border-radius:20px;
-  font-size:12px;font-weight:300;
-  color:var(--gold);
-  width:fit-content;margin-left:auto;margin-right:auto;
-  position:relative;z-index:1;
-}
-.files-chip.on{display:inline-flex}
-.chip-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:blink 2s ease infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.4}}
-
-.fscroll{
-  max-height:128px;overflow-y:auto;
-  border:1px solid var(--border);
-  border-radius:10px;
-  background:var(--surface2);
-  display:none;margin-bottom:16px;
-}
-.fscroll.on{display:block}
-.fscroll::-webkit-scrollbar{width:4px}
-.fscroll::-webkit-scrollbar-track{background:transparent}
-.fscroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-.frow{
-  display:flex;align-items:center;gap:10px;
-  padding:9px 16px;
-  border-bottom:1px solid var(--border);
-  transition:background 0.15s;
-}
-.frow:last-child{border-bottom:none}
-.frow:hover{background:rgba(255,255,255,0.02)}
-.fdot{width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:0.6;flex-shrink:0}
-.fname{font-size:12px;font-weight:300;color:var(--text2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.fsize{font-size:11px;color:var(--text3);flex-shrink:0}
-
-/* Buttons */
-.btn{
-  width:100%;padding:14px 20px;
-  border:none;border-radius:12px;
-  font-family:var(--body);
-  font-size:12px;font-weight:300;letter-spacing:0.16em;text-transform:uppercase;
-  cursor:pointer;transition:all 0.3s;
-  position:relative;overflow:hidden;
-}
-.btn-gold{
-  background:linear-gradient(135deg,var(--gold),#a07830);
-  color:#1a1000;
-}
-.btn-gold::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,var(--gold2),var(--gold));
-  opacity:0;transition:opacity 0.3s;
-}
-.btn-gold:hover::before{opacity:1}
-.btn-gold:active{transform:scale(0.99)}
-.btn-gold:disabled{opacity:0.3;cursor:not-allowed}
-.btn-gold span{position:relative;z-index:1;font-weight:400}
-.btn-gold.ok{background:linear-gradient(135deg,#3ecf8e,#2a9966);color:#001a0d}
-.btn-gold.ok::before{display:none}
-
-.btn-ghost{
-  background:none;
-  border:1px solid var(--border2);
-  border-radius:10px;
-  padding:10px 24px;
-  font-family:var(--body);font-size:11px;font-weight:300;letter-spacing:0.14em;text-transform:uppercase;
-  color:var(--text3);cursor:pointer;
-  transition:all 0.25s;display:none;margin-top:14px;
-}
-.btn-ghost:hover{border-color:var(--text3);color:var(--text2)}
-.btn-ghost.on{display:inline-block}
-
-/* Mic */
-.mic-area{text-align:center;padding:8px 0}
-
-.mic-outer{
-  width:96px;height:96px;border-radius:50%;
-  display:inline-flex;align-items:center;justify-content:center;
-  cursor:pointer;position:relative;
-  margin-bottom:20px;
-}
-.mic-outer::before{
-  content:'';position:absolute;inset:0;border-radius:50%;
-  border:1px solid var(--border2);
-  transition:border-color 0.3s;
-}
-.mic-outer::after{
-  content:'';position:absolute;inset:8px;border-radius:50%;
-  background:var(--surface2);
-  transition:all 0.3s;
-}
-.mic-outer:hover::before{border-color:rgba(201,168,76,0.5)}
-.mic-outer:hover::after{background:rgba(201,168,76,0.06)}
-.mic-outer.rec::before{border-color:rgba(248,113,113,0.6);animation:rpulse 1.6s ease infinite}
-.mic-outer.rec::after{background:rgba(248,113,113,0.08)}
-.mic-outer.done::before{border-color:rgba(62,207,142,0.5)}
-.mic-outer.done::after{background:rgba(62,207,142,0.06)}
-
-.mic-inner{position:relative;z-index:1}
-
-@keyframes rpulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(248,113,113,0.3)}
-  50%{box-shadow:0 0 0 16px rgba(248,113,113,0)}
-}
-
-.mic-lbl{font-family:var(--display);font-size:16px;font-weight:400;color:var(--text2);margin-bottom:5px}
-.mic-sub{font-size:12px;font-weight:200;color:var(--text3);letter-spacing:0.08em}
-
-/* Status */
-.status{
-  font-size:12px;font-weight:300;letter-spacing:0.08em;
-  color:var(--text3);text-align:center;
-  margin-top:12px;min-height:18px;transition:color 0.25s;
-}
-.status.err{color:var(--red)}
-.status.ok{color:var(--green)}
-
-/* Answer */
-.answer-wrap{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:32px;
-  margin-bottom:12px;
-  display:none;
-  animation:rise 0.6s cubic-bezier(.16,1,.3,1) both;
-  position:relative;overflow:hidden;
-}
-.answer-wrap.on{display:block}
-.answer-wrap::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(to right,transparent,var(--gold),var(--gold2),transparent);
-}
-
-.answer-label{
-  display:flex;align-items:center;gap:12px;
-  font-size:11px;font-weight:300;letter-spacing:0.18em;text-transform:uppercase;
-  color:var(--gold);margin-bottom:18px;
-}
-.answer-label::after{content:'';flex:1;height:1px;background:linear-gradient(to right,rgba(201,168,76,0.3),transparent)}
-
-.answer-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:blink 2s infinite}
-
-.answer-text{
-  font-family:var(--display);
-  font-size:18px;font-weight:400;
-  line-height:1.85;
-  color:var(--text);
-  letter-spacing:0.01em;
-}
-
-@keyframes rise{
-  from{opacity:0;transform:translateY(18px)}
-  to{opacity:1;transform:translateY(0)}
-}
-
-/* Divider */
-.divider{
-  display:flex;align-items:center;gap:12px;
-  margin:4px 0 20px;
-}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
-.div-gem{
-  width:6px;height:6px;
-  background:var(--gold);
-  transform:rotate(45deg);
-  opacity:0.5;
-}
+.wrapper { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+header { text-align: center; margin-bottom: 48px; }
+.header-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; }
+header h1 { font-size: clamp(28px, 5vw, 52px); font-weight: 800; letter-spacing: -1px; background: linear-gradient(135deg, #fff 30%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.1; margin-bottom: 10px; }
+header p { color: var(--muted); font-size: 14px; font-family: var(--mono); }
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 28px; }
+.tab-btn { font-family: var(--mono); font-size: 11px; padding: 7px 14px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--muted); cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px; }
+.tab-btn:hover { border-color: var(--accent); color: var(--text); }
+.tab-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.panel { display: none; }
+.panel.active { display: block; animation: fadeIn 0.25s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.panel-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; }
+.panel-header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+.panel-title { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+.badge { font-family: var(--mono); font-size: 10px; padding: 4px 10px; border-radius: 20px; border: 1px solid; letter-spacing: 1px; text-transform: uppercase; }
+.badge-purple { color: var(--accent); border-color: var(--accent); background: rgba(124,106,255,0.08); }
+.badge-teal { color: var(--accent2); border-color: var(--accent2); background: rgba(0,229,192,0.08); }
+.badge-pink { color: var(--accent3); border-color: var(--accent3); background: rgba(255,106,142,0.08); }
+.code-header { display: flex; align-items: center; justify-content: space-between; background: #0d0d14; border: 1px solid var(--border); border-bottom: none; border-radius: 10px 10px 0 0; padding: 8px 14px; }
+.code-lang { font-family: var(--mono); font-size: 10px; color: var(--accent2); letter-spacing: 2px; text-transform: uppercase; }
+.copy-btn { font-family: var(--mono); font-size: 10px; padding: 3px 10px; border: 1px solid var(--border); border-radius: 4px; background: transparent; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+.copy-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+pre.code-block { background: #0d0d14; border: 1px solid var(--border); border-top: none; border-radius: 0 0 10px 10px; padding: 16px 18px; font-family: var(--mono); font-size: 12.5px; line-height: 1.75; overflow-x: auto; white-space: pre; tab-size: 4; margin-bottom: 24px; }
+.kw  { color: var(--kw); }
+.fn  { color: var(--fn); }
+.str { color: var(--str); }
+.num { color: var(--num); }
+.cm  { color: var(--cm); font-style: italic; }
+.op  { color: var(--op); }
+.bi  { color: var(--bi); }
+.section-divider { display: flex; align-items: center; gap: 12px; margin: 0 0 24px; }
+.section-divider span { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; }
+.section-divider hr { flex: 1; border: none; border-top: 1px solid var(--border); }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 20px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+label { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+input { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: var(--mono); font-size: 14px; padding: 10px 14px; outline: none; transition: border-color 0.2s; width: 100%; }
+input:focus { border-color: var(--accent); }
+.hint { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 2px; }
+.matrix-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-width: 220px; }
+.matrix-label { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; display: block; }
+.run-btn { font-family: var(--mono); font-size: 13px; font-weight: 600; padding: 12px 28px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px; margin-bottom: 20px; }
+.run-btn:hover { opacity: 0.85; }
+.run-btn:active { transform: scale(0.98); }
+.output-box { background: #0d0d14; border: 1px solid var(--border); border-radius: 10px; padding: 18px; font-family: var(--mono); font-size: 13px; line-height: 1.8; white-space: pre-wrap; word-break: break-all; color: var(--accent2); min-height: 80px; position: relative; }
+.output-label { position: absolute; top: -1px; right: 14px; font-family: var(--mono); font-size: 10px; background: var(--accent2); color: #000; padding: 2px 8px; border-radius: 0 0 6px 6px; letter-spacing: 1px; }
+.output-placeholder { color: var(--muted); }
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="wrapper">
+  <header>
+    <div class="header-tag">// cryptography lab</div>
+    <h1>Crypto Algorithms</h1>
+    <p>Caesar · Hill · Playfair · RSA · MD5 · SHA-256 · Diffie-Hellman</p>
+  </header>
 
-  <!-- Header -->
-  <div class="header">
-    <div class="logo-mark">
-      <svg viewBox="0 0 24 24" fill="none">
-        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" style="color:var(--gold)"/>
-      </svg>
-    </div>
-    <h1>Docu<span>Voice</span></h1>
-    <p class="subtitle">Intelligent Document Query &nbsp;·&nbsp; RAG</p>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('caesar',this)">01 · Caesar</button>
+    <button class="tab-btn" onclick="showTab('hill',this)">02 · Hill</button>
+    <button class="tab-btn" onclick="showTab('playfair',this)">03 · Playfair</button>
+    <button class="tab-btn" onclick="showTab('rsa',this)">04 · RSA</button>
+    <button class="tab-btn" onclick="showTab('md5',this)">05 · MD5</button>
+    <button class="tab-btn" onclick="showTab('sha256',this)">06 · SHA-256</button>
+    <button class="tab-btn" onclick="showTab('dh',this)">07 · Diffie-Hellman</button>
   </div>
 
-  <!-- Config -->
-  <div class="panel config-panel">
-    <div class="divider"><div class="div-gem"></div></div>
-    <span class="field-label">Webhook Configuration</span>
-    <div class="input-wrap">
-      <svg class="input-icon" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" stroke="#8b90a0" stroke-width="1.5" stroke-linecap="round"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" stroke="#8b90a0" stroke-width="1.5" stroke-linecap="round"/></svg>
-      <input type="text" id="uploadUrl" placeholder="Upload webhook — /webhook/upload-pdfs">
-    </div>
-    <div class="input-wrap">
-      <svg class="input-icon" width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="#8b90a0" stroke-width="1.5"/><path d="m21 21-4.35-4.35" stroke="#8b90a0" stroke-width="1.5" stroke-linecap="round"/></svg>
-      <input type="text" id="queryUrl" placeholder="Query webhook — /webhook/query-pdf">
-    </div>
-  </div>
-
-  <!-- Upload -->
-  <div class="panel">
-    <div class="panel-head">
-      <span class="step-badge" id="b1">Step 01</span>
-      <span class="panel-title">Index your documents</span>
-    </div>
-
-    <div class="dropzone" onclick="document.getElementById('pdfInput').click()">
-      <input type="file" id="pdfInput" accept=".pdf" multiple onchange="onFiles(this)">
-      <div class="dz-icon-wrap">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="var(--gold)" stroke-width="1.5" stroke-linejoin="round"/>
-          <path d="M14 2v6h6M12 18v-6M9 15l3-3 3 3" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+  <!-- CAESAR -->
+  <div id="panel-caesar" class="panel active">
+    <div class="panel-card">
+      <div class="panel-header">
+        <span class="panel-title">Caesar Cipher</span>
+        <span class="badge badge-purple">Symmetric · Substitution</span>
       </div>
-      <div class="dz-title">Drop PDF files here or click to browse</div>
-      <div class="dz-hint">30–40 files supported &nbsp;·&nbsp; Any size</div>
-      <div class="files-chip" id="fchip">
-        <div class="chip-dot"></div>
-        <span id="fcount"></span>
+      <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode('cc')">copy</button></div>
+<pre class="code-block" id="cc"><span class="cm"># Caesar Cipher</span>
+text  <span class="op">=</span> <span class="bi">input</span>(<span class="str">"Enter text: "</span>)
+shift <span class="op">=</span> <span class="bi">int</span>(<span class="bi">input</span>(<span class="str">"Enter shift value: "</span>))
+
+<span class="cm"># Encryption</span>
+encrypted <span class="op">=</span> <span class="str">""</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="bi">range</span>(<span class="bi">len</span>(text)):
+    ch <span class="op">=</span> text[i]
+    <span class="kw">if</span> <span class="str">'a'</span> <span class="op">&lt;=</span> ch <span class="op">&lt;=</span> <span class="str">'z'</span>:
+        encrypted <span class="op">+=</span> <span class="bi">chr</span>((<span class="bi">ord</span>(ch) <span class="op">-</span> <span class="num">97</span> <span class="op">+</span> shift) <span class="op">%</span> <span class="num">26</span> <span class="op">+</span> <span class="num">97</span>)
+    <span class="kw">elif</span> <span class="str">'A'</span> <span class="op">&lt;=</span> ch <span class="op">&lt;=</span> <span class="str">'Z'</span>:
+        encrypted <span class="op">+=</span> <span class="bi">chr</span>((<span class="bi">ord</span>(ch) <span class="op">-</span> <span class="num">65</span> <span class="op">+</span> shift) <span class="op">%</span> <span class="num">26</span> <span class="op">+</span> <span class="num">65</span>)
+    <span class="kw">else</span>:
+        encrypted <span class="op">+=</span> ch
+
+<span class="bi">print</span>(<span class="str">"Encrypted text:"</span>, encrypted)
+
+<span class="cm"># Decryption</span>
+decrypted <span class="op">=</span> <span class="str">""</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="bi">range</span>(<span class="bi">len</span>(encrypted)):
+    ch <span class="op">=</span> encrypted[i]
+    <span class="kw">if</span> <span class="str">'a'</span> <span class="op">&lt;=</span> ch <span class="op">&lt;=</span> <span class="str">'z'</span>:
+        decrypted <span class="op">+=</span> <span class="bi">chr</span>((<span class="bi">ord</span>(ch) <span class="op">-</span> <span class="num">97</span> <span class="op">-</span> shift) <span class="op">%</span> <span class="num">26</span> <span class="op">+</span> <span class="num">97</span>)
+    <span class="kw">elif</span> <span class="str">'A'</span> <span class="op">&lt;=</span> ch <span class="op">&lt;=</span> <span class="str">'Z'</span>:
+        decrypted <span class="op">+=</span> <span class="bi">chr</span>((<span class="bi">ord</span>(ch) <span class="op">-</span> <span class="num">65</span> <span class="op">-</span> shift) <span class="op">%</span> <span class="num">26</span> <span class="op">+</span> <span class="num">65</span>)
+    <span class="kw">else</span>:
+        decrypted <span class="op">+=</span> ch
+
+<span class="bi">print</span>(<span class="str">"Decrypted text:"</span>, decrypted)</pre>
+      <div class="section-divider"><hr><span>&#9654; try it</span><hr></div>
+      <div class="form-grid">
+        <div class="form-group"><label>Plaintext</label><input id="c-text" value="Hello World" /></div>
+        <div class="form-group"><label>Shift value</label><input id="c-shift" type="number" min="1" max="25" value="3" /></div>
       </div>
+      <button class="run-btn" onclick="runCaesar()">&#9654; Run</button>
+      <div class="output-box"><span class="output-label">OUTPUT</span><span id="c-out" class="output-placeholder">Click "Run" to see output...</span></div>
     </div>
-
-    <div class="fscroll" id="flist"></div>
-
-    <button class="btn btn-gold" id="upBtn" onclick="uploadPDFs()" disabled>
-      <span id="upTxt">Index Knowledge Base</span>
-    </button>
-    <div class="status" id="upSt"></div>
   </div>
 
-  <!-- Voice -->
-  <div class="panel">
-    <div class="panel-head">
-      <span class="step-badge" id="b2">Step 02</span>
-      <span class="panel-title">Ask by voice</span>
-    </div>
+  <!-- HILL -->
+  <div id="panel-hill" class="panel">
+    <div class="panel-card">
+      <div class="panel-header">
+        <span class="panel-title">Hill Cipher</span>
+        <span class="badge badge-teal">Symmetric · Matrix</span>
+      </div>
+      <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode('hc')">copy</button></div>
+<pre class="code-block" id="hc"><span class="cm"># Hill Cipher</span>
 
-    <div class="mic-area">
-      <div class="mic-outer" id="mring" onclick="toggleRec()">
-        <div class="mic-inner">
-          <svg width="24" height="28" viewBox="0 0 24 28" fill="none" id="msvg">
-            <rect x="7" y="1" width="10" height="16" rx="5" stroke="var(--text2)" stroke-width="1.5"/>
-            <path d="M3 14c0 4.97 4.03 9 9 9s9-4.03 9-9" stroke="var(--text2)" stroke-width="1.5" stroke-linecap="round"/>
-            <line x1="12" y1="23" x2="12" y2="27" stroke="var(--text2)" stroke-width="1.5" stroke-linecap="round"/>
-            <line x1="8" y1="27" x2="16" y2="27" stroke="var(--text2)" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
+<span class="kw">def</span> <span class="fn">char_to_num</span>(c):
+    <span class="kw">return</span> <span class="bi">ord</span>(c) <span class="op">-</span> <span class="num">65</span>
+
+<span class="kw">def</span> <span class="fn">num_to_char</span>(n):
+    <span class="kw">return</span> <span class="bi">chr</span>(n <span class="op">+</span> <span class="num">65</span>)
+
+<span class="kw">def</span> <span class="fn">mod_inverse</span>(det):
+    det <span class="op">=</span> det <span class="op">%</span> <span class="num">26</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="bi">range</span>(<span class="num">26</span>):
+        <span class="kw">if</span> (det <span class="op">*</span> i) <span class="op">%</span> <span class="num">26</span> <span class="op">==</span> <span class="num">1</span>:
+            <span class="kw">return</span> i
+    <span class="kw">return</span> <span class="op">-</span><span class="num">1</span>
+
+<span class="kw">def</span> <span class="fn">encrypt</span>(text, key):
+    cipher <span class="op">=</span> <span class="str">""</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="bi">range</span>(<span class="num">0</span>, <span class="bi">len</span>(text), <span class="num">2</span>):
+        p1 <span class="op">=</span> <span class="fn">char_to_num</span>(text[i])
+        p2 <span class="op">=</span> <span class="fn">char_to_num</span>(text[i <span class="op">+</span> <span class="num">1</span>])
+        c1 <span class="op">=</span> (key[<span class="num">0</span>][<span class="num">0</span>]<span class="op">*</span>p1 <span class="op">+</span> key[<span class="num">0</span>][<span class="num">1</span>]<span class="op">*</span>p2) <span class="op">%</span> <span class="num">26</span>
+        c2 <span class="op">=</span> (key[<span class="num">1</span>][<span class="num">0</span>]<span class="op">*</span>p1 <span class="op">+</span> key[<span class="num">1</span>][<span class="num">1</span>]<span class="op">*</span>p2) <span class="op">%</span> <span class="num">26</span>
+        cipher <span class="op">+=</span> <span class="fn">num_to_char</span>(c1) <span class="op">+</span> <span class="fn">num_to_char</span>(c2)
+    <span class="kw">return</span> cipher
+
+<span class="kw">def</span> <span class="fn">decrypt</span>(cipher, key):
+    det <span class="op">=</span> (key[<span class="num">0</span>][<span class="num">0</span>]<span class="op">*</span>key[<span class="num">1</span>][<span class="num">1</span>] <span class="op">-</span> key[<span class="num">0</span>][<span class="num">1</span>]<span class="op">*</span>key[<span class="num">1</span>][<span class="num">0</span>]) <span class="op">%</span> <span class="num">26</span>
+    inv_det <span class="op">=</span> <span class="fn">mod_inverse</span>(det)
+    inv_key <span class="op">=</span> [
+        [( key[<span class="num">1</span>][<span class="num">1</span>]<span class="op">*</span>inv_det) <span class="op">%</span> <span class="num">26</span>, (<span class="op">-</span>key[<span class="num">0</span>][<span class="num">1</span>]<span class="op">*</span>inv_det) <span class="op">%</span> <span class="num">26</span>],
+        [(<span class="op">-</span>key[<span class="num">1</span>][<span class="num">0</span>]<span class="op">*</span>inv_det) <span class="op">%</span> <span class="num">26</span>, ( key[<span class="num">0</span>][<span class="num">0</span>]<span class="op">*</span>inv_det) <span class="op">%</span> <span class="num">26</span>]
+    ]
+    plain <span class="op">=</span> <span class="str">""</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="bi">range</span>(<span class="num">0</span>, <span class="bi">len</span>(cipher), <span class="num">2</span>):
+        c1 <span class="op">=</span> <span class="fn">char_to_num</span>(cipher[i])
+        c2 <span class="op">=</span> <span class="fn">char_to_num</span>(cipher[i <span class="op">+</span> <span class="num">1</span>])
+        p1 <span class="op">=</span> (inv_key[<span class="num">0</span>][<span class="num">0</span>]<span class="op">*</span>c1 <span class="op">+</span> inv_key[<span class="num">0</span>][<span class="num">1</span>]<span class="op">*</span>c2) <span class="op">%</span> <span class="num">26</span>
+        p2 <span class="op">=</span> (inv_key[<span class="num">1</span>][<span class="num">0</span>]<span class="op">*</span>c1 <span class="op">+</span> inv_key[<span class="num">1</span>][<span class="num">1</span>]<span class="op">*</span>c2) <span class="op">%</span> <span class="num">26</span>
+        plain <span class="op">+=</span> <span class="fn">num_to_char</span>(p1) <span class="op">+</span> <span class="fn">num_to_char</span>(p2)
+    <span class="kw">return</span> plain
+
+<span class="cm"># MAIN</span>
+text <span class="op">=</span> <span class="bi">input</span>(<span class="str">"Enter plaintext: "</span>).<span class="fn">upper</span>().<span class="fn">replace</span>(<span class="str">" "</span>, <span class="str">""</span>)
+<span class="kw">if</span> <span class="bi">len</span>(text) <span class="op">%</span> <span class="num">2</span> <span class="op">!=</span> <span class="num">0</span>:
+    text <span class="op">+=</span> <span class="str">"X"</span>
+
+<span class="bi">print</span>(<span class="str">"Enter key matrix (2x2):"</span>)
+k11 <span class="op">=</span> <span class="bi">int</span>(<span class="bi">input</span>())
+k12 <span class="op">=</span> <span class="bi">int</span>(<span class="bi">input</span>())
+k21 <span class="op">=</span> <span class="bi">int</span>(<span class="bi">input</span>())
+k22 <span class="op">=</span> <span class="bi">int</span>(<span class="bi">input</span>())
+key <span class="op">=</span> [[k11, k12], [k21, k22]]
+
+cipher <span class="op">=</span> <span class="fn">encrypt</span>(text, key)
+<span class="bi">print</span>(<span class="str">"Encrypted text:"</span>, cipher)
+plain <span class="op">=</span> <span class="fn">decrypt</span>(cipher, key)
+<span class="bi">print</span>(<span class="str">"Decrypted text:"</span>, plain)</pre>
+      <div class="section-divider"><hr><span>&#9654; try it</span><hr></div>
+      <div class="form-grid">
+        <div class="form-group"><label>Plaintext</label><input id="h-text" value="HELLO" /></div>
+      </div>
+      <div style="margin-bottom:20px">
+        <span class="matrix-label">Key Matrix (2x2)</span>
+        <div class="matrix-grid">
+          <div class="form-group"><label>k11</label><input id="h-k11" type="number" value="3" /></div>
+          <div class="form-group"><label>k12</label><input id="h-k12" type="number" value="3" /></div>
+          <div class="form-group"><label>k21</label><input id="h-k21" type="number" value="2" /></div>
+          <div class="form-group"><label>k22</label><input id="h-k22" type="number" value="5" /></div>
         </div>
       </div>
-      <div class="mic-lbl" id="mlbl">Tap to record</div>
-      <div class="mic-sub" id="msub">Tap again to stop &amp; submit</div>
-      <br>
-      <button class="btn-ghost" id="reRecBtn" onclick="reRec()">Re-record</button>
+      <button class="run-btn" onclick="runHill()">&#9654; Run</button>
+      <div class="output-box"><span class="output-label">OUTPUT</span><span id="h-out" class="output-placeholder">Click "Run" to see output...</span></div>
     </div>
-    <div class="status" id="qSt"></div>
   </div>
 
-  <!-- Answer -->
-  <div class="answer-wrap" id="ansPanel">
-    <div class="answer-label">
-      <div class="answer-dot"></div>
-      Answer
+  <!-- PLAYFAIR -->
+  <div id="panel-playfair" class="panel">
+    <div class="panel-card">
+      <div class="panel-header">
+        <span class="panel-title">Playfair Cipher</span>
+        <span class="badge badge-pink">Symmetric · Digraph</span>
+      </div>
+      <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode('pfc')">copy</button></div>
+<pre class="code-block" id="pfc"><span class="cm"># Playfair Cipher</span>
+
+<span class="kw">def</span> <span class="fn">generate_matrix</span>(key):
+    matrix <span class="op">=</span> []
+    used   <span class="op">=</span> []
+    <span class="kw">for</span> ch <span class="kw">in</span> key:
+        <span class="kw">if</span> ch <span class="op">==</span> <span class="str">'J'</span>: ch <span class="op">=</span> <span class="str">'I'</span>
+        <span class="kw">if</span> ch <span class="kw">not</span> <span class="kw">in</span> used <span class="kw">and</span> <span class="str">'A'</span> <span class="op">&lt;=</span> ch <span class="op">&lt;=</span> <span class="str">'Z'</span>:
+            used.<span class="fn">append</span>(ch)
+    <span class="kw">for</span> ch <span class="kw">in</span> <span class="str">"ABCDEFGHIKLMNOPQRSTUVWXYZ"</span>:
+        <span class="kw">if</span> ch <span class="kw">not</span> <span class="kw">in</span> used: used.<span class="fn">append</span>(ch)
+    k <span class="op">=</span> <span class="num">0</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="bi">range</span>(<span class="num">5</span>):
+        row <span class="op">=</span> []
+        <span class="kw">for</span> j <span class="kw">in</span> <span class="bi">range</span>(<span class="num">5</span>):
+            row.<span class="fn">append</span>(used[k]); k <span class="op">+=</span> <span class="num">1</span>
+        matrix.<span class="fn">append</span>(row)
+    <span class="kw">return</span> matrix
+
+<span class="kw">def</span> <span class="fn">display_matrix</span>(matrix):
+    <span class="bi">print</span>(<span class="str">"\n5x5 Key Matrix:"</span>)
+    <span class="kw">for</span> row <span class="kw">in</span> matrix:
+        <span class="kw">for</span> ch <span class="kw">in</span> row:
+            <span class="bi">print</span>(ch, end<span class="op">=</span><span class="str">" "</span>)
+        <span class="bi">print</span>()
+
+<span class="kw">def</span> <span class="fn">find_pos</span>(matrix, ch):
+    <span class="kw">if</span> ch <span class="op">==</span> <span class="str">'J'</span>: ch <span class="op">=</span> <span class="str">'I'</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="bi">range</span>(<span class="num">5</span>):
+        <span class="kw">for</span> j <span class="kw">in</span> <span class="bi">range</span>(<span class="num">5</span>):
+            <span class="kw">if</span> matrix[i][j] <span class="op">==</span> ch: <span class="kw">return</span> i, j
+
+<span class="kw">def</span> <span class="fn">encrypt</span>(text, matrix):
+    text <span class="op">=</span> text.<span class="fn">upper</span>().<span class="fn">replace</span>(<span class="str">"J"</span>,<span class="str">"I"</span>).<span class="fn">replace</span>(<span class="str">" "</span>,<span class="str">""</span>)
+    i <span class="op">=</span> <span class="num">0</span>; cipher <span class="op">=</span> <span class="str">""</span>
+    <span class="kw">while</span> i <span class="op">&lt;</span> <span class="bi">len</span>(text):
+        a <span class="op">=</span> text[i]; b <span class="op">=</span> <span class="str">'X'</span>
+        <span class="kw">if</span> i <span class="op">+</span> <span class="num">1</span> <span class="op">&lt;</span> <span class="bi">len</span>(text): b <span class="op">=</span> text[i <span class="op">+</span> <span class="num">1</span>]
+        <span class="kw">if</span> a <span class="op">==</span> b: b <span class="op">=</span> <span class="str">'X'</span>; i <span class="op">+=</span> <span class="num">1</span>
+        <span class="kw">else</span>: i <span class="op">+=</span> <span class="num">2</span>
+        r1,c1 <span class="op">=</span> <span class="fn">find_pos</span>(matrix,a); r2,c2 <span class="op">=</span> <span class="fn">find_pos</span>(matrix,b)
+        <span class="kw">if</span>   r1<span class="op">==</span>r2: cipher<span class="op">+=</span>matrix[r1][(c1<span class="op">+</span><span class="num">1</span>)<span class="op">%</span><span class="num">5</span>]<span class="op">+</span>matrix[r2][(c2<span class="op">+</span><span class="num">1</span>)<span class="op">%</span><span class="num">5</span>]
+        <span class="kw">elif</span> c1<span class="op">==</span>c2: cipher<span class="op">+=</span>matrix[(r1<span class="op">+</span><span class="num">1</span>)<span class="op">%</span><span class="num">5</span>][c1]<span class="op">+</span>matrix[(r2<span class="op">+</span><span class="num">1</span>)<span class="op">%</span><span class="num">5</span>][c2]
+        <span class="kw">else</span>:         cipher<span class="op">+=</span>matrix[r1][c2]<span class="op">+</span>matrix[r2][c1]
+    <span class="kw">return</span> cipher
+
+<span class="kw">def</span> <span class="fn">decrypt</span>(text, matrix):
+    plain <span class="op">=</span> <span class="str">""</span>; i <span class="op">=</span> <span class="num">0</span>
+    <span class="kw">while</span> i <span class="op">&lt;</span> <span class="bi">len</span>(text):
+        a<span class="op">=</span>text[i]; b<span class="op">=</span>text[i<span class="op">+</span><span class="num">1</span>]; i<span class="op">+=</span><span class="num">2</span>
+        r1,c1<span class="op">=</span><span class="fn">find_pos</span>(matrix,a); r2,c2<span class="op">=</span><span class="fn">find_pos</span>(matrix,b)
+        <span class="kw">if</span>   r1<span class="op">==</span>r2: plain<span class="op">+=</span>matrix[r1][(c1<span class="op">-</span><span class="num">1</span>)<span class="op">%</span><span class="num">5</span>]<span class="op">+</span>matrix[r2][(c2<span class="op">-</span><span class="num">1</span>)<span class="op">%</span><span class="num">5</span>]
+        <span class="kw">elif</span> c1<span class="op">==</span>c2: plain<span class="op">+=</span>matrix[(r1<span class="op">-</span><span class="num">1</span>)<span class="op">%</span><span class="num">5</span>][c1]<span class="op">+</span>matrix[(r2<span class="op">-</span><span class="num">1</span>)<span class="op">%</span><span class="num">5</span>][c2]
+        <span class="kw">else</span>:         plain<span class="op">+=</span>matrix[r1][c2]<span class="op">+</span>matrix[r2][c1]
+    <span class="kw">return</span> plain
+
+<span class="cm"># MAIN</span>
+key    <span class="op">=</span> <span class="bi">input</span>(<span class="str">"Enter key: "</span>).<span class="fn">upper</span>()
+text   <span class="op">=</span> <span class="bi">input</span>(<span class="str">"Enter text: "</span>)
+matrix <span class="op">=</span> <span class="fn">generate_matrix</span>(key)
+<span class="fn">display_matrix</span>(matrix)
+encrypted <span class="op">=</span> <span class="fn">encrypt</span>(text, matrix)
+<span class="bi">print</span>(<span class="str">"Encrypted text:"</span>, encrypted)
+decrypted <span class="op">=</span> <span class="fn">decrypt</span>(encrypted, matrix)
+<span class="bi">print</span>(<span class="str">"Decrypted text:"</span>, decrypted)</pre>
+      <div class="section-divider"><hr><span>&#9654; try it</span><hr></div>
+      <div class="form-grid">
+        <div class="form-group"><label>Key</label><input id="pf-key" value="MONARCHY" /></div>
+        <div class="form-group"><label>Plaintext</label><input id="pf-text" value="INSTRUMENTS" /></div>
+      </div>
+      <button class="run-btn" onclick="runPlayfair()">&#9654; Run</button>
+      <div class="output-box"><span class="output-label">OUTPUT</span><span id="pf-out" class="output-placeholder">Click "Run" to see output...</span></div>
     </div>
-    <div class="answer-text" id="ansTxt"></div>
+  </div>
+
+  <!-- RSA -->
+  <div id="panel-rsa" class="panel">
+    <div class="panel-card">
+      <div class="panel-header">
+        <span class="panel-title">RSA Encryption</span>
+        <span class="badge badge-purple">Asymmetric · Public-Key</span>
+      </div>
+      <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode('rc')">copy</button></div>
+<pre class="code-block" id="rc"><span class="cm"># RSA Encryption</span>
+
+<span class="kw">def</span> <span class="fn">gcd</span>(a, b):
+    <span class="kw">while</span> b <span class="op">!=</span> <span class="num">0</span>:
+        a, b <span class="op">=</span> b, a <span class="op">%</span> b
+    <span class="kw">return</span> a
+
+<span class="kw">def</span> <span class="fn">mod_inverse</span>(e, phi):
+    <span class="kw">for</span> d <span class="kw">in</span> <span class="bi">range</span>(<span class="num">1</span>, phi):
+        <span class="kw">if</span> (d <span class="op">*</span> e) <span class="op">%</span> phi <span class="op">==</span> <span class="num">1</span>:
+            <span class="kw">return</span> d
+
+<span class="kw">def</span> <span class="fn">mod_exp</span>(base, exp, mod):
+    result <span class="op">=</span> <span class="num">1</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="bi">range</span>(exp):
+        result <span class="op">=</span> (result <span class="op">*</span> base) <span class="op">%</span> mod
+    <span class="kw">return</span> result
+
+p   <span class="op">=</span> <span class="bi">int</span>(<span class="bi">input</span>(<span class="str">"Enter p: "</span>))
+q   <span class="op">=</span> <span class="bi">int</span>(<span class="bi">input</span>(<span class="str">"Enter q: "</span>))
+n   <span class="op">=</span> p <span class="op">*</span> q
+phi <span class="op">=</span> (p <span class="op">-</span> <span class="num">1</span>) <span class="op">*</span> (q <span class="op">-</span> <span class="num">1</span>)
+e   <span class="op">=</span> <span class="bi">int</span>(<span class="bi">input</span>(<span class="str">"Enter e: "</span>))
+
+<span class="kw">if</span> <span class="fn">gcd</span>(e, phi) <span class="op">!=</span> <span class="num">1</span>:
+    <span class="bi">print</span>(<span class="str">"Invalid e"</span>); <span class="fn">exit</span>()
+
+d   <span class="op">=</span> <span class="fn">mod_inverse</span>(e, phi)
+msg <span class="op">=</span> <span class="bi">input</span>(<span class="str">"Enter message: "</span>)
+
+ascii_values    <span class="op">=</span> [<span class="bi">ord</span>(char) <span class="kw">for</span> char <span class="kw">in</span> msg]
+cipher          <span class="op">=</span> [<span class="fn">mod_exp</span>(val, e, n) <span class="kw">for</span> val <span class="kw">in</span> ascii_values]
+decrypted_ascii <span class="op">=</span> [<span class="fn">mod_exp</span>(val, d, n) <span class="kw">for</span> val <span class="kw">in</span> cipher]
+decrypted_msg   <span class="op">=</span> <span class="str">''</span>.<span class="fn">join</span>(<span class="bi">chr</span>(val) <span class="kw">for</span> val <span class="kw">in</span> decrypted_ascii)
+
+<span class="bi">print</span>(<span class="str">"Public Key:"</span>,          (e, n))
+<span class="bi">print</span>(<span class="str">"Private Key:"</span>,         (d, n))
+<span class="bi">print</span>(<span class="str">"Encrypted Message:"</span>,   cipher)
+<span class="bi">print</span>(<span class="str">"Decrypted Message:"</span>,   decrypted_msg)</pre>
+      <div class="section-divider"><hr><span>&#9654; try it</span><hr></div>
+      <div class="form-grid">
+        <div class="form-group"><label>Prime p</label><input id="r-p" type="number" value="61" /></div>
+        <div class="form-group"><label>Prime q</label><input id="r-q" type="number" value="53" /></div>
+        <div class="form-group"><label>Exponent e</label><input id="r-e" type="number" value="17" /><span class="hint">coprime with (p-1)(q-1)</span></div>
+        <div class="form-group"><label>Message</label><input id="r-msg" value="Hi" /></div>
+      </div>
+      <button class="run-btn" onclick="runRSA()">&#9654; Run</button>
+      <div class="output-box"><span class="output-label">OUTPUT</span><span id="r-out" class="output-placeholder">Click "Run" to see output...</span></div>
+    </div>
+  </div>
+
+  <!-- MD5 -->
+  <div id="panel-md5" class="panel">
+    <div class="panel-card">
+      <div class="panel-header">
+        <span class="panel-title">MD5 Hash (Simplified)</span>
+        <span class="badge badge-teal">Hash Function · 128-bit</span>
+      </div>
+      <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode('mc')">copy</button></div>
+<pre class="code-block" id="mc"><span class="cm"># MD5 Hash (Simplified)</span>
+
+<span class="kw">def</span> <span class="fn">left_rotate</span>(x, c):
+    <span class="kw">return</span> ((x <span class="op">&lt;&lt;</span> c) <span class="op">|</span> (x <span class="op">&gt;&gt;</span> (<span class="num">32</span> <span class="op">-</span> c))) <span class="op">&amp;</span> <span class="num">0xFFFFFFFF</span>
+
+<span class="kw">def</span> <span class="fn">simple_md5</span>(message):
+    A <span class="op">=</span> <span class="num">0x67452301</span>
+    B <span class="op">=</span> <span class="num">0xefcdab89</span>
+    C <span class="op">=</span> <span class="num">0x98badcfe</span>
+    D <span class="op">=</span> <span class="num">0x10325476</span>
+
+    msg <span class="op">=</span> [<span class="bi">ord</span>(c) <span class="kw">for</span> c <span class="kw">in</span> message]
+
+    <span class="kw">for</span> i <span class="kw">in</span> msg:
+        F    <span class="op">=</span> (B <span class="op">&amp;</span> C) <span class="op">|</span> (<span class="op">~</span>B <span class="op">&amp;</span> D)
+        temp <span class="op">=</span> (A <span class="op">+</span> F <span class="op">+</span> i) <span class="op">&amp;</span> <span class="num">0xFFFFFFFF</span>
+        A, B, C, D <span class="op">=</span> D, (B <span class="op">+</span> <span class="fn">left_rotate</span>(temp, <span class="num">5</span>)) <span class="op">&amp;</span> <span class="num">0xFFFFFFFF</span>, B, C
+
+    <span class="kw">return</span> <span class="bi">hex</span>(A)[<span class="num">2</span>:] <span class="op">+</span> <span class="bi">hex</span>(B)[<span class="num">2</span>:] <span class="op">+</span> <span class="bi">hex</span>(C)[<span class="num">2</span>:] <span class="op">+</span> <span class="bi">hex</span>(D)[<span class="num">2</span>:]
+
+<span class="kw">def</span> <span class="fn">hex_to_binary_128</span>(hex_str):
+    binary <span class="op">=</span> <span class="bi">bin</span>(<span class="bi">int</span>(hex_str, <span class="num">16</span>))[<span class="num">2</span>:]
+    <span class="kw">return</span> binary.<span class="fn">zfill</span>(<span class="num">128</span>)
+
+msg      <span class="op">=</span> <span class="bi">input</span>(<span class="str">"Enter message: "</span>)
+hash_hex <span class="op">=</span> <span class="fn">simple_md5</span>(msg)
+hash_bin <span class="op">=</span> <span class="fn">hex_to_binary_128</span>(hash_hex)
+
+<span class="bi">print</span>(<span class="str">"MD5 Hash (Hex):"</span>,          hash_hex)
+<span class="bi">print</span>(<span class="str">"MD5 Hash (128-bit Binary):"</span>, hash_bin)
+<span class="bi">print</span>(<span class="str">"Length:"</span>, <span class="bi">len</span>(hash_bin), <span class="str">"bits"</span>)
+<span class="kw">if</span> <span class="bi">len</span>(hash_bin) <span class="op">==</span> <span class="num">128</span>:
+    <span class="bi">print</span>(<span class="str">"Verified: Output is exactly 128 bits"</span>)
+<span class="kw">else</span>:
+    <span class="bi">print</span>(<span class="str">"Error: Output is not 128 bits"</span>)</pre>
+      <div class="section-divider"><hr><span>&#9654; try it</span><hr></div>
+      <div class="form-grid">
+        <div class="form-group"><label>Message</label><input id="m-msg" value="Hello" /></div>
+      </div>
+      <button class="run-btn" onclick="runMD5()">&#9654; Run</button>
+      <div class="output-box"><span class="output-label">OUTPUT</span><span id="m-out" class="output-placeholder">Click "Run" to see output...</span></div>
+    </div>
+  </div>
+
+  <!-- SHA256 -->
+  <div id="panel-sha256" class="panel">
+    <div class="panel-card">
+      <div class="panel-header">
+        <span class="panel-title">SHA-256 Hash (Simplified)</span>
+        <span class="badge badge-pink">Hash Function · 256-bit</span>
+      </div>
+      <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode('sc')">copy</button></div>
+<pre class="code-block" id="sc"><span class="cm"># SHA-256 Hash (Simplified)</span>
+
+<span class="kw">def</span> <span class="fn">right_rotate</span>(x, n):
+    <span class="kw">return</span> ((x <span class="op">&gt;&gt;</span> n) <span class="op">|</span> (x <span class="op">&lt;&lt;</span> (<span class="num">32</span> <span class="op">-</span> n))) <span class="op">&amp;</span> <span class="num">0xFFFFFFFF</span>
+
+<span class="kw">def</span> <span class="fn">simple_sha256</span>(message):
+    h0 <span class="op">=</span> <span class="num">0x6a09e667</span>;  h1 <span class="op">=</span> <span class="num">0xbb67ae85</span>
+    h2 <span class="op">=</span> <span class="num">0x3c6ef372</span>;  h3 <span class="op">=</span> <span class="num">0xa54ff53a</span>
+    h4 <span class="op">=</span> <span class="num">0x510e527f</span>;  h5 <span class="op">=</span> <span class="num">0x9b05688c</span>
+    h6 <span class="op">=</span> <span class="num">0x1f83d9ab</span>;  h7 <span class="op">=</span> <span class="num">0x5be0cd19</span>
+
+    msg <span class="op">=</span> [<span class="bi">ord</span>(c) <span class="kw">for</span> c <span class="kw">in</span> message]
+
+    <span class="kw">for</span> i <span class="kw">in</span> msg:
+        s1    <span class="op">=</span> <span class="fn">right_rotate</span>(h4, <span class="num">6</span>) <span class="op">^</span> <span class="fn">right_rotate</span>(h4, <span class="num">11</span>)
+        ch    <span class="op">=</span> (h4 <span class="op">&amp;</span> h5) <span class="op">^</span> (<span class="op">~</span>h4 <span class="op">&amp;</span> h6)
+        temp1 <span class="op">=</span> (h7 <span class="op">+</span> s1 <span class="op">+</span> ch <span class="op">+</span> i) <span class="op">&amp;</span> <span class="num">0xFFFFFFFF</span>
+        s0    <span class="op">=</span> <span class="fn">right_rotate</span>(h0, <span class="num">2</span>) <span class="op">^</span> <span class="fn">right_rotate</span>(h0, <span class="num">13</span>)
+        maj   <span class="op">=</span> (h0 <span class="op">&amp;</span> h1) <span class="op">^</span> (h0 <span class="op">&amp;</span> h2) <span class="op">^</span> (h1 <span class="op">&amp;</span> h2)
+        temp2 <span class="op">=</span> (s0 <span class="op">+</span> maj) <span class="op">&amp;</span> <span class="num">0xFFFFFFFF</span>
+        h7<span class="op">=</span>h6; h6<span class="op">=</span>h5; h5<span class="op">=</span>h4
+        h4 <span class="op">=</span> (h3 <span class="op">+</span> temp1) <span class="op">&amp;</span> <span class="num">0xFFFFFFFF</span>
+        h3<span class="op">=</span>h2; h2<span class="op">=</span>h1; h1<span class="op">=</span>h0
+        h0 <span class="op">=</span> (temp1 <span class="op">+</span> temp2) <span class="op">&amp;</span> <span class="num">0xFFFFFFFF</span>
+
+    <span class="kw">return</span> (<span class="bi">hex</span>(h0)[<span class="num">2</span>:] <span class="op">+</span> <span class="bi">hex</span>(h1)[<span class="num">2</span>:] <span class="op">+</span> <span class="bi">hex</span>(h2)[<span class="num">2</span>:] <span class="op">+</span> <span class="bi">hex</span>(h3)[<span class="num">2</span>:] <span class="op">+</span>
+            <span class="bi">hex</span>(h4)[<span class="num">2</span>:] <span class="op">+</span> <span class="bi">hex</span>(h5)[<span class="num">2</span>:] <span class="op">+</span> <span class="bi">hex</span>(h6)[<span class="num">2</span>:] <span class="op">+</span> <span class="bi">hex</span>(h7)[<span class="num">2</span>:])
+
+<span class="kw">def</span> <span class="fn">to_binary_256</span>(hex_str):
+    <span class="kw">return</span> <span class="bi">bin</span>(<span class="bi">int</span>(hex_str, <span class="num">16</span>))[<span class="num">2</span>:].<span class="fn">zfill</span>(<span class="num">256</span>)
+
+msg      <span class="op">=</span> <span class="bi">input</span>(<span class="str">"Enter message: "</span>)
+hash_hex <span class="op">=</span> <span class="fn">simple_sha256</span>(msg)
+hash_bin <span class="op">=</span> <span class="fn">to_binary_256</span>(hash_hex)
+
+<span class="bi">print</span>(<span class="str">"SHA-256 Hash (Hex):"</span>,    hash_hex)
+<span class="bi">print</span>(<span class="str">"SHA-256 Hash (Binary):"</span>, hash_bin)
+<span class="bi">print</span>(<span class="str">"Length:"</span>, <span class="bi">len</span>(hash_bin), <span class="str">"bits"</span>)
+<span class="kw">if</span> <span class="bi">len</span>(hash_bin) <span class="op">==</span> <span class="num">256</span>:
+    <span class="bi">print</span>(<span class="str">"Verified: Output is exactly 256 bits"</span>)
+<span class="kw">else</span>:
+    <span class="bi">print</span>(<span class="str">"Error: Output is not 256 bits"</span>)</pre>
+      <div class="section-divider"><hr><span>&#9654; try it</span><hr></div>
+      <div class="form-grid">
+        <div class="form-group"><label>Message</label><input id="s-msg" value="Hello" /></div>
+      </div>
+      <button class="run-btn" onclick="runSHA256()">&#9654; Run</button>
+      <div class="output-box"><span class="output-label">OUTPUT</span><span id="s-out" class="output-placeholder">Click "Run" to see output...</span></div>
+    </div>
+  </div>
+
+  <!-- DIFFIE-HELLMAN -->
+  <div id="panel-dh" class="panel">
+    <div class="panel-card">
+      <div class="panel-header">
+        <span class="panel-title">Diffie-Hellman Key Exchange</span>
+        <span class="badge badge-purple">Asymmetric · Key Exchange</span>
+      </div>
+      <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode('dc')">copy</button></div>
+<pre class="code-block" id="dc"><span class="cm"># Diffie-Hellman Key Exchange</span>
+
+<span class="kw">def</span> <span class="fn">power</span>(a, b, p):
+    result <span class="op">=</span> <span class="num">1</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="bi">range</span>(b):
+        result <span class="op">=</span> (result <span class="op">*</span> a) <span class="op">%</span> p
+    <span class="kw">return</span> result
+
+<span class="kw">def</span> <span class="fn">main</span>():
+    P <span class="op">=</span> <span class="bi">int</span>(<span class="bi">input</span>(<span class="str">"Enter value of P (prime): "</span>))
+    G <span class="op">=</span> <span class="bi">int</span>(<span class="bi">input</span>(<span class="str">"Enter value of G (primitive root): "</span>))
+
+    a <span class="op">=</span> <span class="bi">int</span>(<span class="bi">input</span>(<span class="str">"Enter private key of Alice: "</span>))
+    b <span class="op">=</span> <span class="bi">int</span>(<span class="bi">input</span>(<span class="str">"Enter private key of Bob: "</span>))
+
+    x <span class="op">=</span> <span class="fn">power</span>(G, a, P)    <span class="cm"># Alice's public key</span>
+    y <span class="op">=</span> <span class="fn">power</span>(G, b, P)    <span class="cm"># Bob's public key</span>
+
+    <span class="bi">print</span>(<span class="str">"Public key of Alice:"</span>, x)
+    <span class="bi">print</span>(<span class="str">"Public key of Bob:"</span>,   y)
+
+    K <span class="op">=</span> <span class="fn">power</span>(y, a, P)    <span class="cm"># Shared secret</span>
+    <span class="bi">print</span>(<span class="str">"Shared Key:"</span>, K)
+
+    msg          <span class="op">=</span> <span class="bi">input</span>(<span class="str">"Enter message: "</span>)
+    ascii_values <span class="op">=</span> [<span class="bi">ord</span>(c) <span class="kw">for</span> c <span class="kw">in</span> msg]
+    encrypted    <span class="op">=</span> [val <span class="op">^</span> K <span class="kw">for</span> val <span class="kw">in</span> ascii_values]
+    <span class="bi">print</span>(<span class="str">"Encrypted Message:"</span>, encrypted)
+
+    decrypted_ascii <span class="op">=</span> [val <span class="op">^</span> K <span class="kw">for</span> val <span class="kw">in</span> encrypted]
+    decrypted_msg   <span class="op">=</span> <span class="str">''</span>.<span class="fn">join</span>(<span class="bi">chr</span>(val) <span class="kw">for</span> val <span class="kw">in</span> decrypted_ascii)
+    <span class="bi">print</span>(<span class="str">"Decrypted Message:"</span>, decrypted_msg)
+
+<span class="fn">main</span>()</pre>
+      <div class="section-divider"><hr><span>&#9654; try it</span><hr></div>
+      <div class="form-grid">
+        <div class="form-group"><label>Prime P</label><input id="d-p" type="number" value="23" /></div>
+        <div class="form-group"><label>Primitive Root G</label><input id="d-g" type="number" value="5" /></div>
+        <div class="form-group"><label>Alice's Private Key</label><input id="d-a" type="number" value="6" /></div>
+        <div class="form-group"><label>Bob's Private Key</label><input id="d-b" type="number" value="15" /></div>
+        <div class="form-group"><label>Message</label><input id="d-msg" value="Hello" /></div>
+      </div>
+      <button class="run-btn" onclick="runDH()">&#9654; Run</button>
+      <div class="output-box"><span class="output-label">OUTPUT</span><span id="d-out" class="output-placeholder">Click "Run" to see output...</span></div>
+    </div>
   </div>
 
 </div>
+
 <script>
-let pdfs=[],blob=null,mr=null,chunks=[],recording=false;
-const mime='audio/webm;codecs=opus';
+function showTab(id,btn){document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));btn.classList.add('active');document.getElementById('panel-'+id).classList.add('active');}
+function setOut(id,text){const el=document.getElementById(id);el.className='';el.textContent=text;}
+function copyCode(id){const el=document.getElementById(id);navigator.clipboard.writeText(el.innerText).then(()=>{event.target.textContent='copied!';setTimeout(()=>event.target.textContent='copy',1500);});}
 
-function onFiles(inp){
-  const newFiles = Array.from(inp.files);
-  pdfs = [...pdfs, ...newFiles]; // accumulate instead of replace
-  const n = pdfs.length;
-  const chip = document.getElementById('fchip');
-  document.getElementById('fcount').textContent = n+' file'+(n>1?'s':'')+' ready';
-  chip.className = n>0 ? 'files-chip on' : 'files-chip';
-  const fl = document.getElementById('flist');
-  if(n>0){
-    fl.className = 'fscroll on';
-    fl.innerHTML = pdfs.map(f=>`<div class="frow"><div class="fdot"></div><span class="fname">${f.name}</span><span class="fsize">${(f.size/1024).toFixed(0)} KB</span></div>`).join('');
-  } else {
-    fl.className = 'fscroll';
-  }
-  document.getElementById('upBtn').disabled = n===0;
-  // Reset input so same file can be added again
-  inp.value = '';
-}
+function runCaesar(){const text=document.getElementById('c-text').value;const shift=parseInt(document.getElementById('c-shift').value)||3;let enc="";for(let ch of text){if(ch>='a'&&ch<='z')enc+=String.fromCharCode((ch.charCodeAt(0)-97+shift)%26+97);else if(ch>='A'&&ch<='Z')enc+=String.fromCharCode((ch.charCodeAt(0)-65+shift)%26+65);else enc+=ch;}let dec="";for(let ch of enc){if(ch>='a'&&ch<='z')dec+=String.fromCharCode((ch.charCodeAt(0)-97-shift+2600)%26+97);else if(ch>='A'&&ch<='Z')dec+=String.fromCharCode((ch.charCodeAt(0)-65-shift+2600)%26+65);else dec+=ch;}setOut('c-out',`Text:      "${text}"\nShift:      ${shift}\n\nEncrypted: "${enc}"\nDecrypted: "${dec}"`);}
 
-async function uploadPDFs(){
-  const url=document.getElementById('uploadUrl').value.trim();
-  if(!url){st('upSt','Enter the upload webhook URL','err');return;}
-  if(!pdfs.length){st('upSt','Select PDF files first','err');return;}
-  st('upSt','Indexing '+pdfs.length+' document'+(pdfs.length>1?'s':'')+'…','');
-  document.getElementById('upBtn').disabled=true;
-  document.getElementById('upTxt').textContent='Indexing…';
-  const fd=new FormData();
-  pdfs.forEach((f,i)=>fd.append('pdf_'+i,f,f.name));
-  try{
-    await fetch(url,{method:'POST',body:fd});
-    document.getElementById('upBtn').className='btn btn-gold ok';
-    document.getElementById('upTxt').textContent='Knowledge base ready ✓';
-    document.getElementById('b1').className='step-badge done';
-    document.getElementById('b1').textContent='Step 01 ✓';
-    st('upSt','All documents indexed successfully','ok');
-  }catch(e){
-    st('upSt','Upload failed — '+e.message,'err');
-    document.getElementById('upBtn').disabled=false;
-    document.getElementById('upTxt').textContent='Index Knowledge Base';
-  }
-}
+function runHill(){let text=document.getElementById('h-text').value.toUpperCase().replace(/[^A-Z]/g,'');if(text.length%2!==0)text+='X';const k=[[parseInt(document.getElementById('h-k11').value),parseInt(document.getElementById('h-k12').value)],[parseInt(document.getElementById('h-k21').value),parseInt(document.getElementById('h-k22').value)]];const cn=c=>c.charCodeAt(0)-65;const nc=n=>String.fromCharCode(n+65);let enc="";for(let i=0;i<text.length;i+=2){const p1=cn(text[i]),p2=cn(text[i+1]);enc+=nc((k[0][0]*p1+k[0][1]*p2)%26)+nc((k[1][0]*p1+k[1][1]*p2)%26);}const det=((k[0][0]*k[1][1]-k[0][1]*k[1][0])%26+26)%26;let inv=-1;for(let i=0;i<26;i++){if((det*i)%26===1){inv=i;break;}}if(inv===-1){setOut('h-out',"Error: Key matrix not invertible mod 26.\nTry k11=3,k12=3,k21=2,k22=5");return;}const ik=[[(( k[1][1]*inv)%26+26)%26,((-k[0][1]*inv)%26+26)%26],[((-k[1][0]*inv)%26+26)%26,((k[0][0]*inv)%26+26)%26]];let dec="";for(let i=0;i<enc.length;i+=2){const c1=cn(enc[i]),c2=cn(enc[i+1]);dec+=nc((ik[0][0]*c1+ik[0][1]*c2)%26)+nc((ik[1][0]*c1+ik[1][1]*c2)%26);}setOut('h-out',`Input:      "${text}"\nKey matrix: [[${k[0][0]},${k[0][1]}],[${k[1][0]},${k[1][1]}]]\n\nEncrypted:  "${enc}"\nDecrypted:  "${dec}"`);}
 
-async function toggleRec(){
-  if(!recording)await startRec();else stopRec();
-}
+function runPlayfair(){const keyRaw=document.getElementById('pf-key').value.toUpperCase();const textRaw=document.getElementById('pf-text').value.toUpperCase().replace(/J/g,'I').replace(/[^A-Z]/g,'');const used=[];for(let ch of keyRaw){const c=ch==='J'?'I':ch;if(c>='A'&&c<='Z'&&!used.includes(c))used.push(c);}for(let ch of "ABCDEFGHIKLMNOPQRSTUVWXYZ"){if(!used.includes(ch))used.push(ch);}const mat=[];for(let i=0;i<5;i++)mat.push(used.slice(i*5,i*5+5));const fp=c=>{if(c==='J')c='I';for(let i=0;i<5;i++)for(let j=0;j<5;j++)if(mat[i][j]===c)return[i,j];};let text=textRaw,i=0,enc="";while(i<text.length){let a=text[i],b=i+1<text.length?text[i+1]:'X';if(a===b){b='X';i++;}else i+=2;const[r1,c1]=fp(a),[r2,c2]=fp(b);if(r1===r2)enc+=mat[r1][(c1+1)%5]+mat[r2][(c2+1)%5];else if(c1===c2)enc+=mat[(r1+1)%5][c1]+mat[(r2+1)%5][c2];else enc+=mat[r1][c2]+mat[r2][c1];}i=0;let dec="";while(i<enc.length){const a=enc[i],b=enc[i+1];i+=2;const[r1,c1]=fp(a),[r2,c2]=fp(b);if(r1===r2)dec+=mat[r1][(c1+4)%5]+mat[r2][(c2+4)%5];else if(c1===c2)dec+=mat[(r1+4)%5][c1]+mat[(r2+4)%5][c2];else dec+=mat[r1][c2]+mat[r2][c1];}const ms=mat.map(r=>r.join(' ')).join('\n');setOut('pf-out',`Key matrix:\n${ms}\n\nInput:     "${textRaw}"\nEncrypted: "${enc}"\nDecrypted: "${dec}"`);}
 
-async function startRec(){
-  const url=document.getElementById('queryUrl').value.trim();
-  if(!url){st('qSt','Enter the query webhook URL','err');return;}
-  try{
-    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-    mr=new MediaRecorder(stream,{mimeType:mime});
-    chunks=[];
-    mr.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};
-    mr.onstop=()=>{
-      blob=new Blob(chunks,{type:mime});
-      setMic('done','Recorded','Searching knowledge base…');
-      document.getElementById('reRecBtn').className='btn-ghost on';
-      document.getElementById('b2').className='step-badge done';
-      document.getElementById('b2').textContent='Step 02 ✓';
-      st('qSt','Transcribing & querying…','');
-      sendQ();
-    };
-    mr.start();recording=true;
-    setMic('rec','Recording…','Tap to stop & send');
-    st('qSt','');
-  }catch(e){st('qSt','Microphone access denied','err');}
-}
+function gcd(a,b){while(b){[a,b]=[b,a%b];}return a;}
+function modInvRSA(e,phi){for(let d=1;d<phi;d++)if((d*e)%phi===1)return d;return -1;}
+function modExp(base,exp,mod){let r=1n;base=BigInt(base)%BigInt(mod);exp=BigInt(exp);mod=BigInt(mod);while(exp>0n){if(exp%2n===1n)r=r*base%mod;exp/=2n;base=base*base%mod;}return Number(r);}
+function runRSA(){const p=parseInt(document.getElementById('r-p').value),q=parseInt(document.getElementById('r-q').value),n=p*q,phi=(p-1)*(q-1),e=parseInt(document.getElementById('r-e').value),msg=document.getElementById('r-msg').value;if(gcd(e,phi)!==1){setOut('r-out',`Error: e not coprime with phi=${phi}.\nTry p=61,q=53,e=17`);return;}const d=modInvRSA(e,phi);if(d===-1){setOut('r-out',"Could not compute d.");return;}const ascii=[...msg].map(c=>c.charCodeAt(0));const cipher=ascii.map(v=>modExp(v,e,n));const plain=cipher.map(v=>modExp(v,d,n));const dm=plain.map(v=>String.fromCharCode(v)).join('');setOut('r-out',`n=${p}x${q}=${n}   phi(n)=${phi}\n\nPublic key:   (e=${e}, n=${n})\nPrivate key:  (d=${d}, n=${n})\n\nOriginal ASCII:  [${ascii}]\nEncrypted:       [${cipher}]\nDecrypted msg:   "${dm}"`);}
 
-function stopRec(){
-  if(mr&&recording){mr.stop();mr.stream.getTracks().forEach(t=>t.stop());recording=false;}
-}
+function leftRotate(x,c){return((x<<c)|(x>>>(32-c)))&0xFFFFFFFF;}
+function runMD5(){const msg=document.getElementById('m-msg').value;let A=0x67452301,B=0xefcdab89,C=0x98badcfe,D=0x10325476;for(let ch of msg){const i=ch.charCodeAt(0);const F=((B&C)|(~B&D))&0xFFFFFFFF;const temp=(A+F+i)&0xFFFFFFFF;[A,B,C,D]=[D,(B+leftRotate(temp,5))&0xFFFFFFFF,B,C];}const hex=[A,B,C,D].map(v=>v.toString(16).padStart(8,'0')).join('');const bin=BigInt('0x'+hex).toString(2).padStart(128,'0');setOut('m-out',`Message:       "${msg}"\n\nHash (Hex):    ${hex}\nHash (Binary): ${bin}\nLength:        ${bin.length} bits  Verified`);}
 
-function reRec(){
-  blob=null;recording=false;
-  setMic('','Tap to record','Tap again to stop & submit');
-  document.getElementById('reRecBtn').className='btn-ghost';
-  document.getElementById('ansPanel').className='answer-wrap';
-  st('qSt','');
-}
+function rightRotate(x,n){return((x>>>n)|(x<<(32-n)))&0xFFFFFFFF;}
+function runSHA256(){const msg=document.getElementById('s-msg').value;let[h0,h1,h2,h3,h4,h5,h6,h7]=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];for(let ch of msg){const i=ch.charCodeAt(0);const s1=(rightRotate(h4,6)^rightRotate(h4,11))&0xFFFFFFFF;const chv=((h4&h5)^(~h4&h6))&0xFFFFFFFF;const t1=(h7+s1+chv+i)&0xFFFFFFFF;const s0=(rightRotate(h0,2)^rightRotate(h0,13))&0xFFFFFFFF;const maj=((h0&h1)^(h0&h2)^(h1&h2))&0xFFFFFFFF;const t2=(s0+maj)&0xFFFFFFFF;[h7,h6,h5,h4,h3,h2,h1,h0]=[h6,h5,h4,(h3+t1)&0xFFFFFFFF,h2,h1,h0,(t1+t2)&0xFFFFFFFF];}const hex=[h0,h1,h2,h3,h4,h5,h6,h7].map(v=>v.toString(16).padStart(8,'0')).join('');const bin=BigInt('0x'+hex).toString(2).padStart(256,'0');setOut('s-out',`Message:       "${msg}"\n\nHash (Hex):    ${hex}\nHash (Binary): ${bin}\nLength:        ${bin.length} bits  Verified`);}
 
-async function sendQ(){
-  const url=document.getElementById('queryUrl').value.trim();
-  const fd=new FormData();
-  fd.append('audio',blob,'voice.webm');
-  try{
-    const res=await fetch(url,{method:'POST',body:fd});
-    const data=await res.json();
-    const reply=data.output||data.reply||data.text||data.message||data.content||JSON.stringify(data);
-    document.getElementById('ansTxt').textContent=reply;
-    document.getElementById('ansPanel').className='answer-wrap on';
-    st('qSt','Answer received','ok');
-    setMic('','Ask another question','Tap to record');
-  }catch(e){
-    st('qSt','Query failed — '+e.message,'err');
-    setMic('','Tap to try again','');
-  }
-}
-
-function setMic(state,lbl,sub){
-  document.getElementById('mring').className='mic-outer'+(state?' '+state:'');
-  document.getElementById('mlbl').textContent=lbl;
-  document.getElementById('msub').textContent=sub;
-  const c=state==='rec'?'var(--red)':state==='done'?'var(--green)':'var(--text2)';
-  document.querySelectorAll('#msvg rect,#msvg path,#msvg line').forEach(el=>{
-    if(el.hasAttribute('stroke'))el.setAttribute('stroke',c);
-  });
-}
-
-function st(id,msg,type=''){
-  const el=document.getElementById(id);
-  el.textContent=msg;
-  el.className='status'+(type?' '+type:'');
-}
+function power(a,b,p){let r=1;for(let i=0;i<b;i++)r=(r*a)%p;return r;}
+function runDH(){const P=parseInt(document.getElementById('d-p').value),G=parseInt(document.getElementById('d-g').value),a=parseInt(document.getElementById('d-a').value),b=parseInt(document.getElementById('d-b').value),msg=document.getElementById('d-msg').value;const x=power(G,a,P),y=power(G,b,P),K=power(y,a,P);const enc=[...msg].map(c=>c.charCodeAt(0)^K);const dec=enc.map(v=>String.fromCharCode(v^K)).join('');setOut('d-out',`P=${P}, G=${G}\n\nAlice private: ${a}  =>  Alice public: ${x}\nBob   private: ${b}  =>  Bob   public: ${y}\n\nShared key: ${K}\n\nMessage:           "${msg}"\nEncrypted (ASCII): [${enc}]\nDecrypted:         "${dec}"`);}
 </script>
 </body>
 </html>
